@@ -25,7 +25,7 @@
 var config = {
 	channels: ["#testmybot","#glugcalinfo"],
 	server: "irc.freenode.net",
-	botName: "Botokesto",
+	botName: "Glugbot",
     userName:"Botokesto",
     realName:"I am a Bot!",
     floodProtection: true,
@@ -86,7 +86,7 @@ bot.addListener("message",function(from,to,message){    // Check for swear words
 
 bot.addListener("message",function(from,to,message){    // Check for bot name
         if (message.indexOf(config.botName)!=-1) 
-            bot.say(to,"I am a bot, "+from+"! You sure you called for /me?");
+            bot.say(to,"I am a bot, "+from+"! You sure you wanna chat with /me?");
 });
 
 bot.addListener("pm",function(from,to,message){ // Handle PM to bot
