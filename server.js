@@ -46,9 +46,9 @@ bot.addListener('error', function(message) {
 });
 
 // Config Vars
-var helloWords=['hello','hi','howdy','hola'];
+var helloWords=['hello','howdy','hola'];
 var byeWords=['bye','tata','ciao','c ya'];
-var swearWords=['fuck','dick','shit','bitch','bastard'];
+var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody'];
 
 var warnedNicks=[];
 
