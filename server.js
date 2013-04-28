@@ -23,13 +23,13 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot"],//,"#glugcalinfo"]
+	channels: ["#testmybot","#glugcalinfo"],
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
     realName:"Botokesto ChatterG",
     floodProtection: false,
-    port:6667//8001
+    port:8001 //6667
 };
 
 var irc=require("irc");
@@ -74,7 +74,7 @@ bot.addListener("join", function(channel,nick,message){     // welcome on join
     if(nick!=config.botName){
         bot.say(channel,channel+" welcomes you aboard, "+nick+". Enjoy your stay!");
         if(S(nick).endsWith('_')){
-            bot.say(channel,"Hey "+nick+", are you a ghost? Perhaps you should try /msg nickserv ghost [username] [password]");
+            bot.say(channel,"BTW "+nick+", are you a ghost? Perhaps you should try /msg nickserv ghost [username] [password]");
         }
     }        
 });
@@ -126,11 +126,15 @@ function getResponse(factoid){
         response= S(factoid).capitalize().s+"! How are you doing? ";
         break;
     case "bye" :
+    case "goodbye" :
+    case "good bye" :
     case "tata" :
     case "ciao" :
+    case "see you":
+    case "hasta la vista":
+    case "au revoir":
     case "c ya" :
     case "cya" :
-    case "cu" :
         response= S(factoid).capitalize().s+"! It was nice having you here, do come back soon! :=) ";
         break;
     case "who are you" :
