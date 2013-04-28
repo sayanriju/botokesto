@@ -23,16 +23,18 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot","#glugcalinfo"],
+	channels: ["#testmybot"]//,"#glugcalinfo"],
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
-    realName:"I am a Bot!",
-    floodProtection: true,
+    realName:"Botokesto ChatterG",
+    floodProtection: false,
     port:6667//8001
 };
 
 var irc=require("irc");
+var S=require("string");
+
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels,
     port:config.port,
@@ -48,7 +50,7 @@ bot.addListener('error', function(message) {
 // Config Vars
 var helloWords=['hello','howdy','hola','ahoy'];
 var byeWords=['bye','tata','ciao','c ya','cya'];
-var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody'];
+var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody','wtf'];
 
 var warnedNicks=[];
 
@@ -67,16 +69,17 @@ function checkForWords(wordlist,msg){
 
 // The Listeners
 
-bot.addListener("message",function(from,to,message){    // Check for hello words
-    if(checkForWords(helloWords,message))
-        bot.say(to,"Hello "+from+"! How are you?");
+// Welcome on join
+bot.addListener("join", function(channel,nick,message){     // welcome on join
+    if(nick!=config.botName){
+        bot.say(channel,channel+" welcomes you aboard, "+nick+". Enjoy your stay!");
+        if(S(nick).endsWith('_')){
+            bot.say(channel,"Hey "+nick+", are you a ghost? Perhaps you should try /msg nickserv ghost [username] [password]");
+        }
+    }        
 });
 
-bot.addListener("message",function(from,to,message){    // Check for bye words
-    if(checkForWords(byeWords,message))
-        bot.say(to,"Leaving so soon, "+from+"?");
-});
-
+// Profanity checker
 bot.addListener("message",function(from,to,message){    // Check for swear words
     if(checkForWords(swearWords,message)){
         bot.say(to,from+", please refrain from using profanity in the channel.");
@@ -84,17 +87,109 @@ bot.addListener("message",function(from,to,message){    // Check for swear words
     }
 });
 
-bot.addListener("message",function(from,to,message){    // Check for bot name
-        if (message.indexOf(config.botName)!=-1) 
-            bot.say(to,"I am a bot, "+from+"! You sure you wanna chat with /me?");
+// Factoid parser
+function getResponse(factoid){
+    var response='';
+    switch (factoid.toLowerCase()){
+
+    case "ask" :
+    case "help" :
+    case "justask" :
+    case "question" :
+    case "problem" :
+    case "question" :
+        response="Please don't ask to ask a question, simply ask the question (all on ONE line and in the channel, so that others can read and follow it easily). If anyone knows the answer they will most likely reply. :-)";
+        break;
+    case "pastebin" :
+    case "paste" :
+    case "flood" :
+    case "flooding" :
+    case "pasting" :
+        response="For posting multi-line texts into the channel, please use http://pastebin.com and post the resulting link here.";
+        break;
+    case "language" :
+    case "profanity" :
+    case "nsfw" :
+    case "swear" :
+    case "curse" :
+    case "swearing" :
+    case "cursing" :
+        response="Please watch your language and topic to help keep this channel family-friendly, polite, and professional.";
+        break;    
+    case "hello" :
+    case "hi" :
+    case "howdy" :
+    case "hola" :
+    case "ahoy" :
+    case "swearing" :
+    case "cursing" :
+        response= S(factoid).capitalize().s+"! How are you doing? ";
+        break;
+    case "bye" :
+    case "tata" :
+    case "ciao" :
+    case "c ya" :
+    case "cya" :
+    case "cu" :
+        response= S(factoid).capitalize().s+"! It was nice having you here. Do come back soon! :=) ";
+        break;
+    case "who are you" :
+    case "about you" :
+    case "bot" :
+    case "yourself" :
+    case "you" :
+        response= "Hi, I'm "+config.realName+". I'm the resident bot of this channel, striving to make your stay here a pleasant one! :=)";
+        break;
+    case "about" :
+    case "about us" :
+    case "aboutus" :
+    case "channel" :
+    case "glugcalinfo" :
+    case "glugcal":
+    case "glug":
+    case "info":
+    case "information":
+        response= "This is the official IRC channel for our GNU/Linux Users Group, Kolkata Chapter. Please visit our website http://ilug-cal.info for further information.";
+        break;
+    case "news" :
+    case "latest news" :
+    case "happening" :
+        response= "This is the official IRC channel for our GNU/Linux Users Group, Kolkata Chapter. Please visit our website http://ilug-cal.info for further information.";
+        break;
+    case "event" :
+    case "events" :
+    case "upcoming" :
+    case "calendar" :
+    case "event calendar" :
+        response= "This is the official IRC channel for our GNU/Linux Users Group, Kolkata Chapter. Please visit our website http://ilug-cal.info for further information.";
+        break;
+        
+    
+    case "ping":
+        response="pong!";
+        break;
+
+    default: response="Sorry, my responses are limited. You must ask the right question.";
+    }
+
+    return response;
+}
+
+// Check for factoid commands
+bot.addListener("message",function(nick,channel,message){    // Check if starts with botname 
+        if (S(message.toLowerCase()).startsWith(config.botName.toLowerCase())){
+            var factoid=S(message.toLowerCase()).chompLeft(config.botName.toLowerCase()).trim().stripPunctuation().s;
+            bot.say(channel,nick+": "+getResponse(factoid));
+        } 
+});
+bot.addListener("message",function(nick,channel,message){    // Check if starts with ! 
+        if (S(message.toLowerCase()).startsWith('!')){
+            var factoid=S(message.toLowerCase()).trim().stripPunctuation().s;
+            bot.say(channel,nick+": "+getResponse(factoid));
+        } 
 });
 
 bot.addListener("pm",function(from,to,message){ // Handle PM to bot
     bot.say(from,"Sorry, "+from);
     bot.say(from,"My responses are limited. You must ask the right question.");
-});
-
-bot.addListener("join", function(channel,nick,message){     // welcome on join
-    if(nick!=config.botName)
-        bot.say(channel,channel+" welcomes you aboard, "+nick+". Enjoy your stay!");
 });
