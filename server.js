@@ -23,7 +23,7 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot"]//,"#glugcalinfo"],
+	channels: ["#testmybot"],//,"#glugcalinfo"]
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
@@ -178,18 +178,18 @@ function getResponse(factoid){
 // Check for factoid commands
 bot.addListener("message",function(nick,channel,message){    // Check if starts with botname 
         if (S(message.toLowerCase()).startsWith(config.botName.toLowerCase())){
-            var factoid=S(message.toLowerCase()).chompLeft(config.botName.toLowerCase()).trim().stripPunctuation().s;
+            var factoid=S(message.toLowerCase()).chompLeft(config.botName.toLowerCase()).stripPunctuation().trim().s;
             bot.say(channel,nick+": "+getResponse(factoid));
         } 
 });
 bot.addListener("message",function(nick,channel,message){    // Check if starts with ! 
         if (S(message.toLowerCase()).startsWith('!')){
-            var factoid=S(message.toLowerCase()).trim().stripPunctuation().s;
+            var factoid=S(message.toLowerCase()).stripPunctuation().trim().s;
             bot.say(channel,nick+": "+getResponse(factoid));
         } 
 });
 
-bot.addListener("pm",function(from,to,message){ // Handle PM to bot
-    bot.say(from,"Sorry, "+from);
-    bot.say(from,"My responses are limited. You must ask the right question.");
+bot.addListener("pm",function(nick,channel,message){ // Handle PM to bot
+    var factoid=S(message.toLowerCase()).stripPunctuation().trim().s;  
+    bot.say(nick,getResponse(factoid));
 });
