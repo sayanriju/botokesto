@@ -131,7 +131,7 @@ function getResponse(factoid){
     case "c ya" :
     case "cya" :
     case "cu" :
-        response= S(factoid).capitalize().s+"! It was nice having you here. Do come back soon! :=) ";
+        response= S(factoid).capitalize().s+"! It was nice having you here, do come back soon! :=) ";
         break;
     case "who are you" :
     case "about you" :
@@ -140,7 +140,9 @@ function getResponse(factoid){
     case "you" :
         response= "Hi, I'm "+config.realName+". I'm the resident bot of this channel, striving to make your stay here a pleasant one! :=)";
         break;
-    case "about" :
+    case "who we are" :
+    case "who are we" :
+    case "about":
     case "about us" :
     case "aboutus" :
     case "channel" :
@@ -177,16 +179,36 @@ function getResponse(factoid){
 
 // Check for factoid commands
 bot.addListener("message",function(nick,channel,message){    // Check if starts with botname 
-        if (S(message.toLowerCase()).startsWith(config.botName.toLowerCase())){
-            var factoid=S(message.toLowerCase()).chompLeft(config.botName.toLowerCase()).stripPunctuation().trim().s;
-            bot.say(channel,nick+": "+getResponse(factoid));
-        } 
+    if (S(message.toLowerCase()).startsWith(config.botName.toLowerCase())){
+        var factoid=S(message.toLowerCase()).chompLeft(config.botName.toLowerCase()).stripPunctuation().trim().s;
+        bot.say(channel,nick+": "+getResponse(factoid));
+    } 
 });
+
 bot.addListener("message",function(nick,channel,message){    // Check if starts with ! 
-        if (S(message.toLowerCase()).startsWith('!')){
+    if (S(message.toLowerCase()).startsWith('!')){
+        // Advanced mode: ![something] | [someone] OR ![something] > [someone]
+        if(S(message).contains('|')){
+            var to_nick=S(message.replace(/^.*\|/,'')).trim().s;
+            if(to_nick=='' || to_nick=='me')
+                to_nick=nick;
+            var factoid=S(message.replace(/\|.*$/,'')).stripPunctuation().trim().s;
+            bot.say(channel,to_nick+": "+getResponse(factoid)); // mention [someone]
+        }
+        else if(S(message).contains('>')){
+            var to_nick=S(message.replace(/^.*\>/,'')).trim().s;
+            if(to_nick=='' ||to_nick=='me' )
+                to_nick=nick;
+            var factoid=S(message.replace(/\>.*$/,'')).stripPunctuation().trim().s;
+            bot.say(to_nick,getResponse(factoid));  // PM [someone]
+        }
+        else{
+            // Simple mode: Respond directly to the invoking nick
             var factoid=S(message.toLowerCase()).stripPunctuation().trim().s;
             bot.say(channel,nick+": "+getResponse(factoid));
-        } 
+        }
+    }
+
 });
 
 bot.addListener("pm",function(nick,channel,message){ // Handle PM to bot
