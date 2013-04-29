@@ -43,7 +43,7 @@ bot.addListener('error', function(message) {
 // Config Vars
 var helloWords=['hello','howdy','hola','ahoy'];
 var byeWords=['bye','tata','ciao','c ya','cya'];
-var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody','wtf'];
+var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody','wtf','suck','ass','butthole'];
 
 var warnedNicks=[];
 
@@ -74,7 +74,7 @@ bot.addListener("join", function(channel,nick,message){     // welcome on join
 
 // Profanity checker
 bot.addListener("message",function(nick,channel,message){    // Check for swear words
-    if(checkForWords(swearWords,message)){
+    if(checkForWords(swearWords,S(message).stripPunctuation().trim().s)){
         bot.say(channel,nick+", please refrain from using profanity in the channel.");
         //warnedNicks.push(nick);
     }
@@ -141,7 +141,7 @@ function getResponse(factoid){
         case "capslock":
         case "shout":
         case "shouting":
-            response="Please turn off your CAPSLOCK. Typing in all CAPS is akin to SHOUTING!";
+            response="Typing in all CAPS is akin to SHOUTING! You should turn off your CAPSLOCK key before posting here.";
             break;
         case "irc":
         case "irc beginner":
