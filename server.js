@@ -16,7 +16,7 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot","#glugcalinfo"],
+	channels: ["#testmybot"],//,"#glugcalinfo"],
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
@@ -65,7 +65,7 @@ function checkForWords(wordlist,msg){
 // Welcome on join
 bot.addListener("join", function(channel,nick,message){     // welcome on join
     if(nick!=config.botName){
-        bot.say(channel,channel+" welcomes you aboard, "+nick+". Enjoy your stay!");
+        bot.say(channel,nick+": Welcome aboard on "+channel+". Enjoy your stay!");
         if(S(nick).endsWith('_')){
             bot.say(channel,"BTW "+nick+", are you a ghost? Perhaps you should try /msg nickserv ghost [username] [password]");
         }
@@ -73,14 +73,21 @@ bot.addListener("join", function(channel,nick,message){     // welcome on join
 });
 
 // Profanity checker
-bot.addListener("message",function(from,to,message){    // Check for swear words
+bot.addListener("message",function(nick,channel,message){    // Check for swear words
     if(checkForWords(swearWords,message)){
-        bot.say(to,from+", please refrain from using profanity in the channel.");
-        //warnedNicks.push(from);
+        bot.say(channel,nick+", please refrain from using profanity in the channel.");
+        //warnedNicks.push(nick);
     }
 });
 
-// Factoid parser
+// All CAPS warning
+bot.addListener("message",function(nick,channel,message){    // Check for ALLCAPS for long messages
+    if(message.length>=17 && message.toUpperCase() == message){
+        bot.say(channel,nick+", please turn off your CAPSLOCK. Typing in all CAPS is akin to SHOUTING, and is considered bad manners here!");
+    }
+});
+
+// Factoid parser (TODO: move to separate module)
 function getResponse(factoid){
     var response='';
     switch (factoid.toLowerCase()){
@@ -113,8 +120,6 @@ function getResponse(factoid){
     case "howdy" :
     case "hola" :
     case "ahoy" :
-    case "swearing" :
-    case "cursing" :
         response= S(factoid).capitalize().s+"! How are you doing? ";
         break;
     case "bye" :
@@ -181,14 +186,30 @@ function getResponse(factoid){
 
     
     case "who are you" :
+    case "who r u" :
     case "about you" :
     case "bot" :
     case "yourself" :
     case "you" :
-        response= "Hi, I'm "+config.realName+". I'm the resident bot of this channel, striving to make your stay here a pleasant one! :=)";
+        response= "Hi, my name is "+config.realName+". I'm the resident bot of this channel, striving to make your stay here a pleasant one! :=)";
         break;
+    //~ case "source code":
+    //~ case "your source":
+    //~ case "bot source":
+    //~ case "botsource":
+    //~ case "sourcecode":
+    //~ case "source":
+        //~ response="My source code may be found at";
+        //~ break;
+    //~ case "usage":
+    //~ case "use bot":
+    //~ case "bot usage":
+        //~ response=:"";
+        //~ break;
     case "who we are" :
     case "who are we" :
+    case "what is this" :
+    case "where am i" :
     case "about":
     case "about us" :
     case "aboutus" :
@@ -210,14 +231,15 @@ function getResponse(factoid){
     case "news" :
     case "latest news" :
     case "happening" :
-        response= "Please visit http://ilug-cal.info for information on latest news.";
+    case "happenings" :
+        response= "Please visit http://ilug-cal.info for information on latest news regarding GLUG-Cal.";
         break;
     case "event" :
     case "events" :
     case "upcoming" :
     case "calendar" :
     case "event calendar" :
-        response= "Please visit http://ilug-cal.info for information on upcoming events.";
+        response= "Please visit http://ilug-cal.info for information on upcoming events at GLUG-Cal.";
         break;
 
 
@@ -246,6 +268,7 @@ function getResponse(factoid){
         break;
         
     case "prayer":
+    case "pray":
         response="Dear <your_favorite_deity_here>, Give me strength to understand and work with users who question my logic, the rules, netiquette, and common sense. Give me resilience to teach them the basics of Linux, GNU, FSF, and IRC. Allow me not to stray to nitpicking, argument, foul language, or leisurely op abuse. Deliver me my daily xkcd, User Friendly, LWN, and guard over my encrypted drives. Let it be so."
         break;
     case "ping":
@@ -272,14 +295,14 @@ bot.addListener("message",function(nick,channel,message){    // Check if starts 
         // Advanced mode: ![something] | [someone] OR ![something] > [someone]
         if(S(message).contains('|')){
             var to_nick=S(message.replace(/^.*\|/,'')).trim().s;
-            if(to_nick=='' || to_nick=='me')
+            if(to_nick=='' || to_nick==' ' || to_nick.toLowerCase()=='me')
                 to_nick=nick;
             var factoid=S(message.replace(/\|.*$/,'')).stripPunctuation().trim().s;
             bot.say(channel,to_nick+": "+getResponse(factoid)); // mention [someone]
         }
         else if(S(message).contains('>')){
             var to_nick=S(message.replace(/^.*\>/,'')).trim().s;
-            if(to_nick=='' ||to_nick=='me' )
+            if(to_nick=='' ||to_nick==' ' || to_nick.toLowerCase()=='me' )
                 to_nick=nick;
             var factoid=S(message.replace(/\>.*$/,'')).stripPunctuation().trim().s;
             bot.say(to_nick,getResponse(factoid));  // PM [someone]
