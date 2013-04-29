@@ -16,7 +16,7 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot"],//,"#glugcalinfo"],
+	channels: ["#testmybot","#glugcalinfo"],
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
