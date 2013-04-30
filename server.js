@@ -277,8 +277,8 @@ function getResponse(factoid){
         case "factoids":
             var fs = require('fs');
             var mersenne=require('mersenne');
-            var file =  './cookies.json';
-            var data=JSON.parse(fs.readFileSync(file, 'utf8'));
+            var data =  require('./cookies.json');
+            //var data=JSON.parse(fs.readFileSync(file, 'utf8'));
             response=S(data[mersenne.rand(data.length)].text).trim().s;
             break;
             
