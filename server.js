@@ -76,21 +76,6 @@ bot.addListener("join", function(channel,nick,message){     // welcome on join
     }        
 });
 
-// Profanity checker
-bot.addListener("message",function(nick,channel,message){    // Check for swear words
-    var words=S(message).trim().s.toLowerCase().split(/[\'\"\?\>\<\(\)\|\-\;\.\!\\\,\:\s]/);
-    if(_.intersection(swearWords,words).length != 0){
-        bot.say(channel,nick+", please refrain from being profane in the channel.");
-    }
-});
-
-// All CAPS warning
-bot.addListener("message",function(nick,channel,message){    // Check for ALLCAPS for long messages
-    if(message.length>=17 && message.toUpperCase() == message){
-        bot.say(channel,nick+", please turn off your CAPSLOCK. Typing in all CAPS is akin to SHOUTING, and is considered bad manners here!");
-    }
-});
-
 // Factoid parser (TODO: move to separate module)
 function getResponse(factoid){
     var response='';
@@ -348,5 +333,20 @@ bot.addListener("message",function(from_nick,to_nick,message){
     if(to_nick.toLowerCase()==config.botName.toLowerCase()){ // It's a PM!  
         var factoid=S(message.toLowerCase()).stripPunctuation().trim().s;  
         bot.say(from_nick,getResponse(factoid));
+    }
+});
+
+// Profanity checker
+bot.addListener("message",function(nick,channel,message){    // Check for swear words
+    var words=S(message).trim().s.toLowerCase().split(/[\'\"\?\>\<\(\)\|\-\;\.\!\\\,\:\s]/);
+    if(_.intersection(swearWords,words).length != 0){
+        bot.say(channel,nick+", please refrain from being profane in the channel.");
+    }
+});
+
+// All CAPS warning
+bot.addListener("message",function(nick,channel,message){    // Check for ALLCAPS for long messages
+    if(message.length>=17 && message.toUpperCase() == message){
+        bot.say(channel,nick+", please turn off your CAPSLOCK. Typing in all CAPS is akin to SHOUTING, and is considered bad manners here!");
     }
 });
