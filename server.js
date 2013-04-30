@@ -16,7 +16,7 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot","#glugcalinfo"],
+	channels: ["#testmybot"],//,"#glugcalinfo"],
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
@@ -27,6 +27,7 @@ var config = {
 
 var irc=require("irc");
 var S=require("string");
+var _ =require("underscore")._;
 
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels,
@@ -41,11 +42,14 @@ bot.addListener('error', function(message) {
 });
 
 // Config Vars
-var helloWords=['hello','howdy','hola','ahoy'];
-var byeWords=['bye','tata','ciao','c ya','cya'];
-var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody','wtf','suck','ass','butthole'];
+//~ var helloWords=['hello','howdy','hola','ahoy'];
+//~ var byeWords=['bye','tata','ciao','c ya','cya'];
+//~ var swearWords=['fuck','dick','cunt','pussy','shit','bitch','bastard','bloody','wtf','suck','ass','butthole'];
 
-var warnedNicks=[];
+//~ var warnedNicks=[];
+
+var swearWords=require("./swearWords.json");
+
 
 // Helper Functions
 
@@ -74,9 +78,9 @@ bot.addListener("join", function(channel,nick,message){     // welcome on join
 
 // Profanity checker
 bot.addListener("message",function(nick,channel,message){    // Check for swear words
-    if(checkForWords(swearWords,S(message).stripPunctuation().trim().s)){
-        bot.say(channel,nick+", please refrain from using profanity in the channel.");
-        //warnedNicks.push(nick);
+    var words=S(message).trim().s.toLowerCase().split(/[\'\"\?\>\<\(\)\|\-\;\.\!\\\,\:\s]/);
+    if(_.intersection(swearWords,words).length != 0){
+        bot.say(channel,nick+", please refrain from being profane in the channel.");
     }
 });
 
@@ -277,8 +281,8 @@ function getResponse(factoid){
         case "factoids":
             var fs = require('fs');
             var mersenne=require('mersenne');
-            var file =  './cookies.json';
-            var data=JSON.parse(fs.readFileSync(file, 'utf8'));
+            var data =  require('./cookies.json');
+            //var data=JSON.parse(fs.readFileSync(file, 'utf8'));
             response=S(data[mersenne.rand(data.length)].text).trim().s;
             break;
             
