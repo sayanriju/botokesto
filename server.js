@@ -16,7 +16,7 @@
 //process.exit();
 
 var config = {
-	channels: ["#testmybot"],//,"#glugcalinfo"],
+	channels: ["#testmybot","#glugcalinfo"],
 	server: "irc.freenode.net",
 	botName: "Glugbot",
     userName:"Botokesto",
@@ -239,11 +239,11 @@ function getResponse(factoid){
             break;
         case "linux":
         case "lunix":
-            response="Linux is JUST the kernel! May s/he who says anything to the contrary meet his/her FreeDoom!!! ;=)"
+            response="Linux is JUST the kernel! May s/he who says anything to the contrary meet his/her FreeDoom!!! ;=)";
             break;
         case "gnu":
         case "gnulinux":
-            response="That popular unix-like operating system must be called GNU/Linux! May s/he who says anything to the contrary meet his/her FreeDoom!!! ;=)"
+            response="That popular unix-like operating system must be called GNU/Linux! May s/he who says anything to the contrary meet his/her FreeDoom!!! ;=)";
             break;
         case "nitpick":
         case "nitpicking":
@@ -253,7 +253,7 @@ function getResponse(factoid){
         case "stallman":
         case "richard stallman":
         case "richard mark stallman":
-            response="RMS is a living God! Visit http://stallman.org/ to bow & pray at his altar! ;=)"
+            response="RMS is a living God! Visit http://stallman.org/ to bow & pray at his altar! ;=)";
             break;
 
         case "fortune":
@@ -273,7 +273,7 @@ function getResponse(factoid){
             
         case "prayer":
         case "pray":
-            response="Dear <your_favorite_deity_here>, Give me strength to understand and work with users who question my logic, the rules, netiquette, and common sense. Give me resilience to teach them the basics of Linux, GNU, FSF, and IRC. Allow me not to stray to nitpicking, argument, foul language, or leisurely op abuse. Deliver me my daily xkcd, User Friendly, LWN, and guard over my encrypted drives. Let it be so."
+            response="Dear <your_favorite_deity_here>, Give me strength to understand and work with users who question my logic, the rules, netiquette, and common sense. Give me resilience to teach them the basics of Linux, GNU, FSF, and IRC. Allow me not to stray to nitpicking, argument, foul language, or leisurely op abuse. Deliver me my daily xkcd, User Friendly, LWN, and guard over my encrypted drives. Let it be so.";
             break;
         case "ping":
             response="pong!";
@@ -338,8 +338,8 @@ bot.addListener("message",function(from_nick,to_nick,message){
 
 // Profanity checker
 bot.addListener("message",function(nick,channel,message){    // Check for swear words
-    var words=S(message).trim().s.toLowerCase().split(/[\'\"\?\>\<\(\)\|\-\;\.\!\\\,\:\s]/);
-    if(_.intersection(swearWords,words).length != 0){
+    var words=S(message).trim().s.toLowerCase().split(/[\'\"\?\><\(\)\|\-\;\.\!\\\,\:\s]/);
+    if(_.intersection(swearWords,words).length !== 0){
         bot.say(channel,nick+", please refrain from being profane in the channel.");
     }
 });
